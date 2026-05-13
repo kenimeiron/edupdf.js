@@ -1,261 +1,237 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>PDF查看器</title>
+    <title>PDF 查看器 - 文件选择</title>
     <style>
-        /* 极简样式，无复杂布局，兼容老浏览器与小屏设备 */
-        body {
+        * {
             margin: 0;
-            padding: 10px;
-            background: #f0f2f5;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            font-size: 16px;
-            line-height: 1.4;
+            padding: 0;
+            box-sizing: border-box;
         }
-        /* 所有块级元素自然垂直排列 */
-        .section {
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            background: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: #1a2a3a;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #ecf0f1;
+            font-size: 24px;
             margin-bottom: 20px;
-            background: white;
-            border: 1px solid #ccc;
-            padding: 12px 15px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 25px;
         }
         .section-title {
+            color: #3498db;
+            font-size: 14px;
+            margin-bottom: 8px;
             font-weight: 600;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-            border-left: 4px solid #2c6e9e;
-            padding-left: 10px;
-            color: #1a3e50;
         }
-        input, button, select {
-            font-size: 16px;
-            padding: 8px 12px;
-            margin-top: 5px;
-            margin-bottom: 5px;
+        input, button {
             width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
             box-sizing: border-box;
-            border: 1px solid #aaa;
-            border-radius: 6px;
-            background: #fff;
+        }
+        input {
+            background: #ecf0f1;
+            margin-bottom: 10px;
         }
         button {
-            background-color: #e9ecef;
+            background: #3498db;
+            color: white;
             cursor: pointer;
-            font-weight: 500;
-            transition: 0.1s;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #2980b9;
         }
         button:active {
-            background-color: #ced4da;
+            transform: scale(0.98);
         }
-        .file-row {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-        }
-        .file-name {
-            font-weight: 500;
-            word-break: break-word;
-            margin-bottom: 10px;
-            color: #0b3b4f;
-        }
-        .btn-open {
-            background-color: #2c6e9e;
-            color: white;
-            border: none;
-            width: auto;
-            display: inline-block;
-            padding: 6px 16px;
-        }
-        .btn-open:active {
-            background-color: #1e4a6e;
-        }
-        hr {
-            margin: 12px 0;
-            border: 0;
-            border-top: 1px solid #ddd;
-        }
-        .info-note {
-            font-size: 0.85rem;
-            color: #555;
+        .file-info {
+            color: #ecf0f1;
+            font-size: 12px;
             margin-top: 8px;
+            text-align: center;
             word-break: break-all;
         }
-        /* 针对老浏览器优化，按钮不依赖flex高级特性 */
-        .inline-block {
-            display: inline-block;
-            width: auto;
+        hr {
+            border-color: #3a5a6a;
+            margin: 20px 0;
         }
-        @media (max-width: 600px) {
-            body {
-                padding: 6px;
-            }
-            .section {
-                padding: 10px;
-            }
-            button, input {
-                font-size: 15px;
-                padding: 10px 12px;
-            }
+        .preset-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        /* 让按钮在小屏幕上更容易点击 */
-        button {
-            min-height: 44px;
+        .preset-btn {
+            background: #3a5a6a;
+            text-align: left;
         }
-        .url-input-group {
-            display: block;
-            width: 100%;
+        .preset-btn:hover {
+            background: #4a6a7a;
         }
     </style>
 </head>
 <body>
-
-    <div class="section">
-        <div class="section-title">打开指定 PDF 链接</div>
-        <div class="url-input-group">
-            <input type="text" id="pdfUrlInput" placeholder="输入PDF文件网址 (https://... 或相对路径)" value="/edupdf.js/example/课课练 初中英语八下 双色版 答案.pdf">
+    <div class="container">
+        <h1>📄 PDF 查看器</h1>
+        
+        <!-- 本地文件 -->
+        <div class="section">
+            <div class="section-title">📁 选择本地文件</div>
+            <input type="file" id="localFileInput" accept=".pdf">
+            <button id="openLocalBtn">📖 打开此 PDF</button>
         </div>
-        <button id="openUrlBtn">跳转查看此 PDF</button>
-        <div class="info-note">
-            直接使用 viewer 打开，无需下载。<br>
-            支持绝对路径或相对路径（相对于当前页面的位置）。
+        
+        <hr>
+        
+        <!-- 网络链接 -->
+        <div class="section">
+            <div class="section-title">🔗 输入链接</div>
+            <input type="text" id="urlInput" placeholder="https://... 或 /path/to/file.pdf">
+            <button id="openUrlBtn">🔗 打开链接</button>
         </div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">可选资料（点击即看）</div>
-        <div id="fileListContainer">
+        
+        <hr>
+        
+        <!-- 预设资料（可选） -->
+        <div class="section">
+            <div class="section-title">📚 快速打开</div>
+            <div class="preset-list" id="presetList">
+                <!-- 动态生成 -->
+            </div>
         </div>
-        <div class="info-note">
-            点击按钮后会跳转到 PDF.js 查看器，自动适配手机。
+        
+        <div class="file-info" id="fileInfo">
+            选择文件后点击打开，将跳转到 PDF 查看器
         </div>
     </div>
 
     <script>
-        // ---------- 配置参数 ----------
-        // PDF.js 查看器入口 (基于实际目录结构: ./pdfjs/2.15/web/viewer.html)
-        // 注意: 本页面需要和 pdfjs 目录的相对位置正确。
-        // 假设当前html位于根目录或合适位置，viewer路径如下（可根据部署微调）：
+        // PDF.js 查看器路径（根据你的实际目录调整）
         const VIEWER_BASE = './pdfjs/2.15/web/viewer.html';
         
-        // 预设两个文件 (相对路径 基于当前html文件的目录)
-        const pdfFiles = [
-            {
-                name: "课课练 初中英语八下 双色版 答案",
-                path: "/edupdf.js/example/课课练 初中英语八下 双色版 答案.pdf"
-            },
-            {
-                name: "《补充习题 数学 八年级下册》参考答案 （2026年春季）",
-                path: "/edupdf.js/example/《补充习题 数学 八年级下册》参考答案 （2026年春季）.pdf"
-            }
+        // 预设文件列表
+        const presets = [
+            { name: "课课练 初中英语八下 双色版 答案", path: "/edupdf.js/example/课课练 初中英语八下 双色版 答案.pdf" },
+            { name: "《补充习题 数学 八年级下册》参考答案", path: "/edupdf.js/example/《补充习题 数学 八年级下册》参考答案 （2026年春季）.pdf" }
         ];
         
-        // ---------- 辅助函数: 打开PDF (直接跳转，不使用blob，符合要求) ----------
-        function openPdfByUrl(pdfUrl) {
+        // 跳转到 PDF 查看器
+        function openPdfViewer(pdfUrl, fileName = '') {
             if (!pdfUrl || pdfUrl.trim() === "") {
-                alert("请填写有效的PDF文件链接或路径");
+                alert("请提供有效的 PDF 地址");
                 return false;
             }
-            // 简单校验是否看起来像PDF路径 (不强校验，后端会处理)
-            let urlString = pdfUrl.trim();
-            // 构建跳转URL: viewer.html?file=编码后的文件地址
-            // 使用 encodeURIComponent 保证参数正确，支持中文路径/特殊符号
-            const viewerUrl = `${VIEWER_BASE}?file=${encodeURIComponent(urlString)}`;
-            // 直接跳转，在新页面打开（或当前页，根据需求，推荐新标签页便于返回）
-            window.open(viewerUrl, '_blank');
+            
+            // 构建跳转 URL
+            const viewerUrl = `${VIEWER_BASE}?file=${encodeURIComponent(pdfUrl)}`;
+            
+            // 在新标签页打开（或当前页，推荐新标签）
+            window.location.href = viewerUrl;
+            
+            // 可选：更新提示信息
+            const displayName = fileName || pdfUrl.split('/').pop() || pdfUrl;
+            document.getElementById('fileInfo').innerHTML = `✅ 正在打开: ${displayName}<br>新标签页将显示 PDF`;
+            
+            console.log('跳转打开:', viewerUrl);
             return true;
         }
         
-        // ---------- 生成文件列表（竖排，每个文件独立按钮，符合第二栏要求）----------
-        function renderFileList() {
-            const container = document.getElementById('fileListContainer');
+        // 处理本地文件：先创建 Blob URL，再跳转
+        function openLocalFile(file) {
+            if (!file || file.type !== 'application/pdf') {
+                alert("请选择一个 PDF 文件");
+                return false;
+            }
+            
+            // 创建 Blob URL
+            const blobUrl = URL.createObjectURL(file);
+            
+            // 跳转打开
+            openPdfViewer(blobUrl, file.name);
+            
+            // 注意：Blob URL 会在新标签页关闭后自动释放
+            // 如果需要手动释放，可以在新页面加载后延迟释放，但通常不需要
+            return true;
+        }
+        
+        // 处理网络链接
+        function openUrl() {
+            const url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                alert("请输入 PDF 网址");
+                return false;
+            }
+            openPdfViewer(url);
+            return true;
+        }
+        
+        // ========== 渲染预设文件列表 ==========
+        function renderPresets() {
+            const container = document.getElementById('presetList');
             if (!container) return;
-            container.innerHTML = ''; // 清空
-            pdfFiles.forEach((file, index) => {
-                // 创建外部包裹div，竖排布局
-                const fileDiv = document.createElement('div');
-                fileDiv.className = 'file-row';
-                // 文件名显示区域
-                const nameSpan = document.createElement('div');
-                nameSpan.className = 'file-name';
-                nameSpan.textContent = file.name;
-                // 打开按钮
-                const openBtn = document.createElement('button');
-                openBtn.textContent = '打开此PDF';
-                openBtn.className = 'btn-open';
-                // 添加点击事件，调用打开方法
-                openBtn.addEventListener('click', (function(path) {
-                    return function() { openPdfByUrl(path); };
-                })(file.path));
-                // 附加提示信息（文件路径小字，可选，方便调试）
-                const pathHint = document.createElement('div');
-                pathHint.className = 'info-note';
-                pathHint.textContent = `路径: ${file.path}`;
-                
-                fileDiv.appendChild(nameSpan);
-                fileDiv.appendChild(openBtn);
-                fileDiv.appendChild(pathHint);
-                container.appendChild(fileDiv);
+            container.innerHTML = '';
+            
+            presets.forEach(preset => {
+                const btn = document.createElement('button');
+                btn.textContent = `📘 ${preset.name}`;
+                btn.className = 'preset-btn';
+                btn.addEventListener('click', () => {
+                    openPdfViewer(preset.path, preset.name);
+                });
+                container.appendChild(btn);
             });
         }
         
-        // ---------- 为第一栏的“跳转”绑定事件 ----------
-        function bindUrlOpener() {
-            const openBtn = document.getElementById('openUrlBtn');
-            const urlInput = document.getElementById('pdfUrlInput');
-            if (openBtn && urlInput) {
-                openBtn.addEventListener('click', function() {
-                    const rawUrl = urlInput.value.trim();
-                    if (rawUrl === "") {
-                        alert("请输入PDF文件地址（支持相对路径或绝对URL）");
-                        return;
-                    }
-                    openPdfByUrl(rawUrl);
-                });
-                // 可选：支持输入框按回车键打开
-                urlInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        openBtn.click();
-                    }
-                });
+        // ========== 绑定事件 ==========
+        
+        // 本地文件打开
+        const localInput = document.getElementById('localFileInput');
+        const openLocalBtn = document.getElementById('openLocalBtn');
+        
+        openLocalBtn.addEventListener('click', () => {
+            if (localInput.files && localInput.files.length > 0) {
+                openLocalFile(localInput.files[0]);
+            } else {
+                alert("请先选择一个 PDF 文件");
             }
-        }
+        });
         
-        // ---------- 额外检测viewer是否存在（仅友好提示）----------
-        function checkViewerAvailability() {
-            // 简单预检，不阻塞功能，只是控制台提示
-            fetch(VIEWER_BASE, { method: 'HEAD', cache: 'no-cache' })
-                .then(resp => {
-                    if (!resp.ok) {
-                        console.warn(`提醒: PDF.js查看器路径 ${VIEWER_BASE} 不可访问，请确保pdfjs目录放置正确。`);
-                    } else {
-                        console.log("PDF.js查看器路径有效");
-                    }
-                })
-                .catch(() => {
-                    console.warn(`无法访问 ${VIEWER_BASE}，请检查相对路径。当前页面需与pdfjs目录同级。`);
-                });
-        }
+        // 网络链接打开
+        const openUrlBtn = document.getElementById('openUrlBtn');
+        const urlInput = document.getElementById('urlInput');
         
-        // ---------- 兼容上古浏览器: 确保所有方法可用 (无复杂polyfill) ----------
-        function init() {
-            renderFileList();      // 生成第二栏文件列表
-            bindUrlOpener();       // 第一栏打开指定URI
-            checkViewerAvailability();  // 非阻塞提醒
-        }
+        openUrlBtn.addEventListener('click', openUrl);
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                openUrl();
+            }
+        });
         
-        // 确保DOM加载完成后执行
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        // 渲染预设列表
+        renderPresets();
+        
+        console.log('📡 页面已启动，选择文件后将跳转打开');
     </script>
 </body>
 </html>
